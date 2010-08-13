@@ -41,7 +41,7 @@ This app is called like this:
 
 This is called an "impression event", which means you will see a web page that displays the ad with id = 7.  If you click the image this URI will be called:
 
-  http://localhost/a/7.iframe
+  http://localhost/a/7.click
 
 At the same time a new window will be opended displaying this URL: 
   
