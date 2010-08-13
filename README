@@ -87,6 +87,8 @@ When you have sbt installed, just go to the root directory of this project and t
 
   bash$ sbt
 
+  sbt> update
+
   sbt> compile
 
   sbt> package
