@@ -1,0 +1,98 @@
+
+
+===================
+  AdManager
+===================
+
+This is a simple Scala application.
+
+===================
+ Installation
+===================
+
+1. You install this application by deploying the file: 
+
+  /bin/AdManager.jar 
+
+to some app server. 
+
+2. You can configure what Ads (banners) the app will hold by configuring the file:
+
+  /WEB-INF/classes/ids_and_uris.txt 
+
+In the basic configuration there are only 2 ads present (7 and 20899):
+
+  7#Det goda företaget#http://www.programmera.net/img/Good.jpg#http://www.google.com
+  20899#Gamla Sun#http://www.programmera.net/img/Coffee_Time.jpg#http://www.sun.com
+
+  
+===================
+ Usage
+===================
+
+Let's say you deploy the JAR with the application name "a" at localhost port 80.
+
+-----------------
+ Transaction
+-----------------
+This app is called like this:
+
+  http://localhost/a/7.iframe
+
+This is called an "impression event", which means you will see a web page that displays the ad with id = 7.  If you click the image this URI will be called:
+
+  http://localhost/a/7.iframe
+
+At the same time a new window will be opended displaying this URL: 
+  
+  http://www.google.com
+
+This is called a "click event".
+
+-----------------
+ Repository
+-----------------
+To view the repository, call this url:
+
+  http://localhost/a/0.log
+
+This might display some content like this:
+
+Impressions
+ImpressionEvent(7,b846b421f73607e4005832efcea8,Fri Aug 13 17:27:45 CEST 2010)
+
+Clicks
+ClickEvent(20899,b846b421f73607e4005832efcea8,Fri Aug 13 17:23:14 CEST 2010)
+ClickEvent(7,b846b421f73607e4005832efcea8,Fri Aug 13 17:24:03 CEST 2010)
+
+Read the data like this:
+
+* The first number is the Ad ID.
+* The second number is the SESSION ID of the surfer.
+* The third text is the date and time of the event.
+
+
+===================
+  Build the code 
+===================
+
+You need the following to build:
+
+* Scala 2.7.7 (To be able to run SBT)
+* SBT
+
+The code is depending on Scala 2.8.0, but this version will be downloaded by SBT during build.
+
+When you have sbt installed, just go to the root directory of this project and type:
+
+  bash$ sbt
+
+  sbt> compile
+
+  sbt> package
+
+Now you can find the packed WAR-file in this dir:
+
+  ./target/scala_2.8.0/admanager_2.8.0-1.0.war  
+
+

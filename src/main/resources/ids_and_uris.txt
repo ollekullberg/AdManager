@@ -1,0 +1,2 @@
+7#Det goda företaget#http://www.programmera.net/img/Good.jpg#http://www.google.com
+20899#Gamla Sun#http://www.programmera.net/img/Coffee_Time.jpg#http://www.sun.com
