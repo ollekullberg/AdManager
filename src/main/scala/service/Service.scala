@@ -31,7 +31,7 @@ package com.programmera.admanager.service {
         case "click" => {
           // Log request to repository
           Repository.storeClick(ad, cookieId) 
-          AdView.buildIframe(adUri, ad)
+          AdView.buildClickHtml(ad)
         }
         case "log" => {
           Repository.toHtml

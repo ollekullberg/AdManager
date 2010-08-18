@@ -8,38 +8,85 @@ package com.programmera.admanager.repository {
   import com.programmera.admanager.http.AdUri
   import com.programmera.admanager.view.AdView
 
-  // Represents a banner view
-  case class ImpressionEvent(adId: Int,  surfer: String, timestamp: java.util.Date)
+  class Event(timestamp: java.util.Date)
 
-  // Represents a banner click
-  case class ClickEvent(adId: Int, surfer: String, timestamp: java.util.Date)
+  // Valid URIs
+  case class AdEvent(adId: Int, surfer: String, timestamp: java.util.Date) extends Event(timestamp)
 
-  case class BadEvent(uri: String, timestamp: java.util.Date)
+  // Bad URIs
+  case class BadEvent(uri: String, timestamp: java.util.Date) extends Event(timestamp)
+
   /**
    * A singleton that manages the repository
    */
   object Repository {
-    private var imprMap = Map[Int,ImpressionEvent]()
-    private var clickMap = Map[Int,ClickEvent]()
+    // A list of banner views
+    private var imprList = List[AdEvent]()
+    // A list of banner clicks
+    private var clickList = List[AdEvent]()
+    // A list of bad URIs
     private var badList = List[BadEvent]()
 
+    // ========================
+    // Methods to store the events
+    // ========================
     def storeImpression(ad: Ad, surfer: String) { 
-      imprMap += ad.id -> ImpressionEvent(ad.id, surfer, new java.util.Date())
+      imprList = AdEvent(ad.id, surfer, new java.util.Date()) :: imprList
     }
     def storeClick(ad: Ad, surfer: String) {
-      clickMap += ad.id -> ClickEvent(ad.id, surfer, new java.util.Date())
+      clickList = AdEvent(ad.id, surfer, new java.util.Date()) :: clickList
     }
     def storeBadUri(adUri: AdUri) { 
       badList =   BadEvent(adUri.uri, new java.util.Date()) :: badList
     }
 
+    // ========================
+    // Methods to extract statistics
+    // ========================
+    def calcTotalImpressions = imprList.size 
+    def calcTotalClicks = clickList.size
+    def calcFailedUriCalls = badList.size
 
+    /**
+     * Will calculate unique clicks or unique impressions
+     */
+    def calcUnique(l: List[AdEvent]) = {
+      // Case classes provide implementation of equals() 
+      case class SurferAdCombo(adId: Int, surfer: String)
+  
+      // A set will only hold unique elements
+      val uniqueSet = collection.mutable.Set[SurferAdCombo]()
+
+      // Add all elements as SurferAdCompos
+      l.foreach { event =>
+        uniqueSet += SurferAdCombo(event.adId, event.surfer) 
+      } 
+ 
+      // Return size
+      uniqueSet.size
+    }
+
+    // ========================
+    // Presentation
+    // ========================
     def toHtml = {
-      val imprHtml = imprMap.map(e => e._2.toString ).mkString("<H2>Impressions</H2>","<BR/>","<HR/>")
-      val clickHtml = clickMap.map(e => e._2.toString ).mkString("<H2>Clicks</H2>","<BR/>","<HR/>")
-      val badHtml = badList.map(e => e.toString ).mkString("<H2>Bad requests</H2>","<BR/>","<HR/>")
+      val statsHtml ="""<H2>Statistics</H2>
+        Total Impressions: %s<BR/>
+        Unique Impressions: %s<BR/>
+        Total Clicks: %s<BR/>
+        Unique Clicks: %s<BR/>
+        Unreadable URIs: %s<HR/>""".format(
+        calcTotalImpressions,
+        calcUnique(imprList), 
+        calcTotalClicks, 
+        calcUnique(clickList), 
+        calcFailedUriCalls)
 
-      "<HTML><HEAD><TITLE>AdManager Logs</TITLE></HEAD><BODY><H1>AdManager Logs</H1><HR>" + imprHtml + clickHtml + badHtml + "</BODY></HTML>"
+      val imprHtml = imprList.mkString("<H2>Impressions</H2>","<BR/>","<HR/>")
+      val clickHtml = clickList.mkString("<H2>Clicks</H2>","<BR/>","<HR/>")
+      val badHtml = badList.mkString("<H2>Bad requests</H2>","<BR/>","<HR/>")
+
+      "<HTML><HEAD><TITLE>AdManager Logs</TITLE></HEAD><BODY><H1>AdManager Logs</H1><HR>" + statsHtml + imprHtml + clickHtml + badHtml + "</BODY></HTML>"
     } 
   }
     
